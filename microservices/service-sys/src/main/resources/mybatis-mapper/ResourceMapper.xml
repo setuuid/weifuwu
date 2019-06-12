@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bit.module.system.dao.ResourceDao">
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="Resource_columns">
+	    <![CDATA[
+			id as id,
+			name as name,
+			res_type as res_type,
+			url as url,
+			terminal_id as terminal_id,
+		
+			app_id as app_id,
+			pid as pid,
+			display as display,
+			api as api,
+			icon as icon
+	    ]]>
+	</sql>
+
+	<!-- 字段与属性映射 -->
+	<resultMap type="com.bit.module.system.bean.Resource" id="resourceMap">
+		<id column="id" property="id"/>
+	    <result column="name" property="name"/>
+	    <result column="res_type" property="resType"/>
+	    <result column="url" property="url"/>
+	    <result column="terminal_id" property="terminalId"/>
+	    <result column="app_id" property="appId"/>
+	    <result column="pid" property="pid"/>
+	    <result column="display" property="display"/>
+	    <result column="api" property="api"/>
+		<result column="icon" property="icon"/>
+	</resultMap>
+
+	<!-- 翻页查询 -->
+	<select id="findByConditionPage" resultMap="resourceMap" parameterType="com.bit.module.system.vo.ResourceVO">
+		select <include refid="Resource_columns" /> from t_sys_resource
+		<where>
+			<if test="id != null  " >and id =#{id,jdbcType=BIGINT}</if>
+			<if test="name != null and name != '' " >and name =#{name,jdbcType=VARCHAR}</if>
+			<if test="resType != null  " >and res_type =#{resType,jdbcType=TINYINT}</if>
+			<if test="url != null and url != '' " >and url =#{url,jdbcType=VARCHAR}</if>
+			<if test="terminalId != null  " >and terminal_id =#{terminalId,jdbcType=TINYINT}</if>
+			<if test="appId != null  " >and app_id =#{appId,jdbcType=TINYINT}</if>
+			<if test="pid != null  " >and pid =#{pid,jdbcType=BIGINT}</if>
+			<if test="display != null " >and display =#{display,jdbcType=TINYINT}</if>
+			<if test="api != null and api != '' " >and api =#{api,jdbcType=VARCHAR}</if>
+			<if test="icon != null and icon != '' " >and api =#{icon,jdbcType=VARCHAR}</if>
+		</where>
+		<if test="orderBy!=null and orderBy!=''">
+		ORDER BY ${orderBy}
+		</if>
+		<if test="order!=null and order!=''">
+		${order}
+		</if>
+	</select>
+
+	<!-- 查询单条记录 -->
+	<select id="findById" resultMap="resourceMap" parameterType="com.bit.module.system.bean.Resource">
+		select <include refid="Resource_columns" /> 
+		from t_sys_resource
+		where id =#{id,jdbcType=BIGINT}
+	</select>
+
+	<!-- 根据参数查询全部 -->
+	<select id="findAllByParam" resultMap="resourceMap" parameterType="com.bit.module.system.bean.Resource">
+		select <include refid="Resource_columns" /> from t_sys_resource
+		<where>
+			<if test="name != null and name != '' " >and name =#{name,jdbcType=VARCHAR}</if>
+			<if test="resType != null  " >and res_type =#{resType,jdbcType=TINYINT}</if>
+			<if test="url != null and url != '' " >and url =#{url,jdbcType=VARCHAR}</if>
+			<if test="terminalId != null  " >and terminal_id =#{terminalId,jdbcType=TINYINT}</if>
+			<if test="appId != null  " >and app_id =#{appId,jdbcType=TINYINT}</if>
+			<if test="pid != null  " >and pid =#{pid,jdbcType=BIGINT}</if>
+			<if test="display != null " >and display =#{display,jdbcType=TINYINT}</if>
+			<if test="api != null and api != '' " >and api =#{api,jdbcType=VARCHAR}</if>
+			<if test="icon != null and icon != '' " >and api =#{icon,jdbcType=VARCHAR}</if>
+			<if test="userId != null  " >
+				and id in (
+					SELECT DISTINCT resource_id from t_sys_role_rel_resource WHERE role_id in(
+						SELECT DISTINCT  role_id FROM t_sys_identity_rel_role WHERE identity_id in(
+							select DISTINCT identity_id FROM t_sys_user_rel_identity WHERE user_id=#{userId,jdbcType=BIGINT}
+							)
+						)
+					)
+			</if>
+			<if test="identityId != null  " >
+				and id in (
+					SELECT DISTINCT resource_id from t_sys_role_rel_resource WHERE role_id in(
+						SELECT DISTINCT  role_id FROM t_sys_identity_rel_role WHERE identity_id =#{identityId}
+						)
+					)
+			</if>
+			<if test="roleId !=null">
+				and id in (select DISTINCT resource_id from t_sys_role_rel_resource WHERE role_id =#{roleId,jdbcType=BIGINT})
+			</if>
+		</where>
+	</select>
+
+	<!-- 添加一条记录 -->
+	<insert id="add" parameterType="com.bit.module.system.bean.Resource">
+		insert INTO t_sys_resource (
+			name ,
+			res_type ,
+			url ,
+			terminal_id ,
+			app_id ,
+			pid ,
+			display ,
+			api,
+			icon
+		) VALUES (
+			#{name,jdbcType=VARCHAR},
+			#{resType,jdbcType=TINYINT},
+			#{url,jdbcType=VARCHAR},
+			#{terminalId,jdbcType=TINYINT},
+			#{appId,jdbcType=TINYINT},
+			#{pid,jdbcType=BIGINT},
+			#{display,jdbcType=TINYINT},
+			#{api,jdbcType=VARCHAR},
+			#{icon,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<!-- 修改一条记录 -->
+	<update id="update" parameterType="com.bit.module.system.bean.Resource">
+		update t_sys_resource
+		<set>
+		<if test="name != null">
+		 name =#{name,jdbcType=VARCHAR},
+		</if>
+		<if test="resType != null">
+		 res_type =#{resType,jdbcType=TINYINT},
+		</if>
+		<if test="url != null">
+		 url =#{url,jdbcType=VARCHAR},
+		</if>
+		<if test="terminalId != null">
+		 terminal_id =#{terminalId,jdbcType=TINYINT},
+		</if>
+		<if test="appId != null">
+		 app_id =#{appId,jdbcType=TINYINT},
+		</if>
+		<if test="pid != null">
+		 pid =#{pid,jdbcType=BIGINT},
+		</if>
+		<if test="display != null">
+		 display =#{display,jdbcType=TINYINT},
+		</if>
+		<if test="api != null">
+		 api =#{api,jdbcType=VARCHAR},
+		</if>
+		<if test="icon != null">
+			icon =#{icon,jdbcType=VARCHAR}
+		</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+
+	<!-- 删除一条记录 -->
+	<delete id="delete" parameterType="com.bit.module.system.bean.Resource">
+		delete from t_sys_resource where id = #{id,jdbcType=BIGINT}
+	</delete>
+
+	<!-- 批量删除 -->
+	<delete id="batchDelete" parameterType="java.util.List">
+		delete from t_sys_resource where id in
+		<foreach collection="ids" open="(" close=")" item="id" separator=",">
+			#{id}
+		</foreach>
+	</delete>
+</mapper>

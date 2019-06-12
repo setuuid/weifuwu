@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bit.module.system.dao.OaDepartmentDao">
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="OaDepartment_columns">
+	    <![CDATA[
+			id as id,
+			name as name,
+			sort as sort
+	    ]]>
+	</sql>
+	<!-- 字段与属性映射 -->
+	<resultMap type="com.bit.module.system.bean.OaDepartment" id="oaDepartmentMap">
+		<id column="id" property="id"/>
+	    <result column="name" property="name"/>
+	    <result column="sort" property="sort"/>
+	</resultMap>
+	<!-- 翻页查询 -->
+	<select id="findByConditionPage" resultMap="oaDepartmentMap" parameterType="com.bit.module.system.vo.OaDepartmentVO">
+		select <include refid="OaDepartment_columns" /> from t_oa_department
+		<where>
+			<if test="id != null and id != '' " >and id =#{id,jdbcType=INTEGER}</if>
+			<if test="name != null and name != '' " >and name =#{name,jdbcType=VARCHAR}</if>
+			<if test="sort != null and sort != '' " >and sort =#{sort,jdbcType=TINYINT}</if>
+		</where>
+		<if test="orderBy!=null and orderBy!=''">
+		ORDER BY ${orderBy}
+		</if>
+		<if test="order!=null and order!=''">
+		${order}
+		</if>
+	</select>
+	<!-- 查询全部 -->
+	<select id="findAll" resultMap="oaDepartmentMap" parameterType="String">
+		select <include refid="OaDepartment_columns" /> from t_oa_department
+		<if test="sorter!=null and sorter!=''">
+			ORDER BY ${sorter}
+		</if>
+	</select>
+	<!-- 查询单条记录 -->
+	<select id="findById" resultMap="oaDepartmentMap" parameterType="com.bit.module.system.bean.OaDepartment">
+		select <include refid="OaDepartment_columns" /> 
+		from t_oa_department
+		where 
+        	id =#{id,jdbcType=INTEGER}
+
+	</select>
+
+	<!--根据用户id查询-->
+    <select id="findByUserId" resultType="com.bit.module.system.bean.OaDepartment">
+		select <include refid="OaDepartment_columns"/> from t_oa_department where id in (select dep_id from  t_sys_user_rel_oa_dep where user_id=#{userId})
+	</select>
+
+    <!-- 添加一条记录 -->
+	<insert id="add" parameterType="com.bit.module.system.bean.OaDepartment">
+		insert INTO t_oa_department (
+			name ,
+			sort
+		) VALUES (
+			#{name,jdbcType=VARCHAR},
+			#{sort,jdbcType=TINYINT}
+		)
+	</insert>
+
+	<!-- 修改一条记录 -->
+	<update id="update" parameterType="com.bit.module.system.bean.OaDepartment">
+		update t_oa_department
+		<set>
+		<if test="name != null">
+		 name =#{name,jdbcType=VARCHAR},
+		</if>
+		<if test="sort != null">
+		 sort =#{sort,jdbcType=TINYINT}
+		</if>
+		</set>
+		where 
+			 id = #{id,jdbcType=INTEGER}
+
+	</update>
+	<!-- 删除一条记录 -->
+	<delete id="delete" parameterType="com.bit.module.system.bean.OaDepartment">
+		delete from t_oa_department 
+		where
+			id = #{id,jdbcType=INTEGER}
+
+	</delete>
+		<!-- 批量删除 -->
+	<delete id="batchDelete" parameterType="List">
+		<foreach item="item" index="index" collection="list" open="begin" close=";end;" separator =";">
+			delete from t_oa_department
+			id in (
+			<foreach collection="ids" item="id" separator=",">
+				#{id}
+			</foreach>
+			)
+		</foreach>
+	</delete>
+</mapper>

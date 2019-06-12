@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bit.module.pb.dao.StudyDao">
+
+
+
+    <insert id="add" parameterType="com.bit.module.pb.bean.Study">
+        insert into t_pb_study(
+           theme,
+           content,
+           attachment_id,
+           create_time,
+           create_user_id,
+           update_time,
+           update_user_id,
+           is_release,
+           pborg_id,
+           release_time
+        )VALUES (
+           #{theme,jdbcType=VARCHAR},
+           #{content,jdbcType=VARCHAR},
+           #{attachmentId,jdbcType=VARCHAR},
+           #{createTime,jdbcType=TIMESTAMP},
+           #{createUserId,jdbcType=BIGINT},
+           #{updateTime,jdbcType=TIMESTAMP},
+           #{updateUserId,jdbcType=BIGINT},
+           #{isRelease,jdbcType=TINYINT},
+           #{pborgId,jdbcType=TINYINT},
+           #{releaseTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.bit.module.pb.bean.Study">
+        update t_pb_study
+        <set>
+            <if test="theme !=null and theme !=''">
+                theme =#{theme,jdbcType=VARCHAR},
+            </if>
+            <if test="content !=null and content !=''">
+                content =#{content,jdbcType=VARCHAR},
+            </if>
+            <if test="attachmentId !=null and attachmentId !=''">
+                attachment_id =#{attachmentId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime !=null">
+                update_time =#{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUserId !=null">
+                update_user_id =#{updateUserId,jdbcType=BIGINT},
+            </if>
+            <if test="isRelease !=null">
+                is_release =#{isRelease,jdbcType=TINYINT},
+            </if>
+            <if test="pborgId !=null">
+                pborg_id =#{pborgId,jdbcType=TINYINT},
+            </if>
+            <if test="releaseTime !=null">
+                release_time =#{releaseTime,jdbcType=TIMESTAMP}
+            </if>
+        </set>
+        where id =#{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from t_pb_study
+        where id =#{id,jdbcType=BIGINT}
+    </delete>
+
+    <select id="queryById" parameterType="long" resultType="com.bit.module.pb.bean.Study">
+        select t1.*,t2.`name`
+        from t_pb_study t1,t_pb_organization t2
+        where t1.pborg_id = t2.id
+        and t1.id =#{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="listPage" resultType="com.bit.module.pb.bean.Study" parameterType="com.bit.module.pb.vo.StudyVO">
+        select t1.*,t2.`name`
+        from t_pb_study t1
+        left join t_pb_organization t2 on t1.pborg_id = t2.id
+        <where>
+            <if test="theme !=null and theme !=''">and t1.theme like #{theme}</if>
+            <if test="isRelease !=null">and t1.is_release =#{isRelease,jdbcType=TINYINT}</if>
+            <if test="startTime !=null and lastTime !=null">and t1.release_time between #{startTime,jdbcType=TIMESTAMP} and #{lastTime,jdbcType=TIMESTAMP}</if>
+        </where>
+        <if test="orderBy !=null and orderBy !=''">
+            ORDER BY ${orderBy}
+        </if>
+        <if test="order!=null and order!=''">
+            ${order}
+        </if>
+    </select>
+</mapper>

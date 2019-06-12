@@ -1,0 +1,75 @@
+spring:
+  zipkin:
+    base-url: http://localhost:8085
+  sleuth:
+    sampler:
+      percentage: 1.0
+  datasource:
+    #name: test
+    url: jdbc:mysql://${mysql_url}/wt_sys?characterEncoding=utf-8
+    username: ${mysql_username}
+    #使用远程的配置中心的参数
+    password: ${mysql_password}
+    # 使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    filters: stat
+    maxActive: 20
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bus-refresh
+redis:
+   hostName: ${redis_hostName}
+   port: 6379
+   timeout: 30
+   maxIdle : 300
+   maxTotal: 1000
+   maxWaitMillis: 1000
+   minEvictableIdleTimeMillis : 300000
+   numTestsPerEvictionRun : 1024
+   timeBetweenEvictionRunsMillis : 30000
+   testOnBorrow : true
+   testWhileIdle : true
+mybatis:
+  mapper-locations: classpath:mybatis-mapper/*.xml
+  config-location:  classpath:mybatis-config.xml
+swagger:
+  basePath: com.bit.soft.service.controller
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: countSql
+logging:
+  level:
+     com.bit.module.system.dao : debug
+
+#token过期时间
+token:
+   expireTime: 3600
+
+#过滤器白名单
+interface:
+   addressConstant: /user/login
+
+#atToken过期时间
+atToken:
+  expire: 86400
+#rtToken过期时间
+rtToken:
+  expire: 604800
+
+url: in1232

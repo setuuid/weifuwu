@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bit.module.pb.dao.PartyMemberApprovalDao">
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="PartyMemberApproval_columns">
+	    <![CDATA[
+			id as id,
+			type as type,
+			user_name as user_name,
+			user_id as user_id,
+			org_id as org_id,
+			org_name as org_name,
+		
+			reason as reason,
+			remark as remark,
+			attachment_ids as attachment_ids,
+			member_id as member_id,
+			modification as modification,
+		
+			insert_time as insert_time,
+			complete_time as complete_time,
+			status as status
+	    ]]>
+	</sql>
+	<!-- 字段与属性映射 -->
+	<resultMap type="com.bit.module.pb.bean.PartyMemberApproval" id="partyMemberApprovalMap">
+		<id column="id" property="id"/>
+	    <result column="type" property="type"/>
+		<result column="user_name" property="userName"/>
+	    <result column="user_id" property="userId"/>
+	    <result column="org_id" property="orgId"/>
+	    <result column="org_name" property="orgName"/>
+	    <result column="reason" property="reason"/>
+	    <result column="remark" property="remark"/>
+	    <result column="attachment_ids" property="attachmentIds"/>
+	    <result column="member_id" property="memberId"/>
+	    <result column="modification" property="modification"/>
+	    <result column="insert_time" property="insertTime"/>
+	    <result column="complete_time" property="completeTime"/>
+	    <result column="status" property="status"/>
+	</resultMap>
+	<!-- 翻页查询 -->
+	<select id="findByConditionPage" resultMap="partyMemberApprovalMap" parameterType="com.bit.module.pb.vo.PartyMemberApprovalVO">
+		select <include refid="PartyMemberApproval_columns" /> from t_pb_party_member_approval
+		<where>
+			<if test="id != null and id != '' " >and id =#{id,jdbcType=BIGINT}</if>
+			<if test="type != null and type != '' " >and type =#{type,jdbcType=TINYINT}</if>
+			<if test="userId != null and userId != '' " >and user_id =#{userId,jdbcType=BIGINT}</if>
+			<if test="orgId != null and orgId != '' " >and org_id =#{orgId,jdbcType=BIGINT}</if>
+			<if test="orgName != null and orgName != '' " >and org_name =#{orgName,jdbcType=VARCHAR}</if>
+			<if test="reason != null and reason != '' " >and reason =#{reason,jdbcType=VARCHAR}</if>
+			<if test="remark != null and remark != '' " >and remark =#{remark,jdbcType=VARCHAR}</if>
+			<if test="attachmentIds != null and attachmentIds != '' " >and attachment_ids =#{attachmentIds,jdbcType=VARCHAR}</if>
+			<if test="memberId != null and memberId != '' " >and member_id =#{memberId,jdbcType=BIGINT}</if>
+			<if test="status != null" >and status =#{status,jdbcType=TINYINT}</if>
+			<if test="userName != null and userName != '' " >and user_name LIKE CONCAT("%"#{userName,jdbcType=VARCHAR}"%")</if>
+		</where>
+		<if test="orderBy!=null and orderBy!=''">
+		ORDER BY ${orderBy}
+		</if>
+		<if test="order!=null and order!=''">
+		${order}
+		</if>
+	</select>
+	<!-- 查询全部 -->
+	<select id="findAll" resultMap="partyMemberApprovalMap" parameterType="String">
+		select <include refid="PartyMemberApproval_columns" /> from t_pb_party_member_approval
+		<if test="sorter!=null and sorter!=''">
+			ORDER BY ${sorter}
+		</if>
+	</select>
+	<!-- 查询单条记录 -->
+	<select id="findById" resultMap="partyMemberApprovalMap" parameterType="com.bit.module.pb.bean.PartyMemberApproval">
+		select <include refid="PartyMemberApproval_columns" /> 
+		from t_pb_party_member_approval
+		where 
+        	id =#{id,jdbcType=BIGINT}
+	</select>
+
+	<!-- 添加一条记录 -->
+	<insert id="add" parameterType="com.bit.module.pb.bean.PartyMemberApproval">
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert INTO t_pb_party_member_approval (
+			type ,
+			user_name,
+			user_id ,
+			org_id ,
+			org_name ,
+			reason ,
+			remark ,
+			attachment_ids ,
+			member_id ,
+			modification ,
+			insert_time ,
+			complete_time ,
+			status
+		) VALUES (
+			#{type,jdbcType=TINYINT},
+			#{userName,jdbcType=VARCHAR},
+			#{userId,jdbcType=BIGINT},
+			#{orgId,jdbcType=BIGINT},
+			#{orgName,jdbcType=VARCHAR},
+			#{reason,jdbcType=VARCHAR},
+			#{remark,jdbcType=VARCHAR},
+			#{attachmentIds,jdbcType=VARCHAR},
+			#{memberId,jdbcType=BIGINT},
+			#{modification,jdbcType=OTHER},
+			#{insertTime,jdbcType=TIMESTAMP},
+			#{completeTime,jdbcType=TIMESTAMP},
+			#{status,jdbcType=TINYINT}
+		)
+	</insert>
+	<!-- 修改一条记录 -->
+	<update id="update" parameterType="com.bit.module.pb.bean.PartyMemberApproval">
+		update t_pb_party_member_approval
+		<set>
+		<if test="type != null">
+		 type =#{type,jdbcType=TINYINT},
+		</if>
+		<if test="userName != null">
+		 user_name =#{userName,jdbcType=VARCHAR},
+		</if>
+		<if test="userId != null">
+		 user_id =#{userId,jdbcType=BIGINT},
+		</if>
+		<if test="orgId != null">
+		 org_id =#{orgId,jdbcType=BIGINT},
+		</if>
+		<if test="orgName != null">
+		 org_name =#{orgName,jdbcType=VARCHAR},
+		</if>
+		<if test="reason != null">
+		 reason =#{reason,jdbcType=VARCHAR},
+		</if>
+		<if test="remark != null">
+		 remark =#{remark,jdbcType=VARCHAR},
+		</if>
+		<if test="attachmentIds != null">
+		 attachment_ids =#{attachmentIds,jdbcType=VARCHAR},
+		</if>
+		<if test="memberId != null">
+		 member_id =#{memberId,jdbcType=BIGINT},
+		</if>
+		<if test="modification != null">
+		 modification =#{modification,jdbcType=OTHER},
+		</if>
+		<if test="insertTime != null">
+		 insert_time =#{insertTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="completeTime != null">
+		 complete_time =#{completeTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="status != null">
+		 status =#{status,jdbcType=TINYINT}
+		</if>
+		</set>
+		where 
+			 id = #{id,jdbcType=BIGINT}
+	</update>
+
+	<update id="updateByStatus" parameterType="com.bit.module.pb.bean.PartyMemberApproval">
+		UPDATE t_pb_party_member_approval
+			SET status =#{status,jdbcType=TINYINT}
+		where
+			 id = #{id,jdbcType=BIGINT}	AND status !=#{status,jdbcType=TINYINT}
+	</update>
+	<!-- 删除一条记录 -->
+	<delete id="delete" parameterType="com.bit.module.pb.bean.PartyMemberApproval">
+		delete from t_pb_party_member_approval 
+		where
+			id = #{id,jdbcType=BIGINT}
+
+	</delete>
+		<!-- 批量删除 -->
+	<delete id="batchDelete" parameterType="List">
+		<foreach item="item" index="index" collection="list" open="begin" close=";end;" separator =";">
+			delete from t_pb_party_member_approval
+			id in (
+			<foreach collection="ids" item="id" separator=",">
+				#{id}
+			</foreach>
+			)
+		</foreach>
+	</delete>
+	<!-- 判断是否已提交申请(草稿状态) -->
+	<select id="findRecord" resultMap="partyMemberApprovalMap" parameterType="com.bit.module.pb.bean.PartyMemberApproval">
+		select <include refid="PartyMemberApproval_columns" />
+		from t_pb_party_member_approval
+		where
+		member_id =#{memberId,jdbcType=BIGINT} AND type =#{type,jdbcType=TINYINT} AND status = 0
+	</select>
+
+	<select id="findOutreason" resultMap="partyMemberApprovalMap" parameterType="com.bit.module.pb.bean.PartyMemberApproval">
+		SELECT <include refid="PartyMemberApproval_columns" />
+		from t_pb_party_member_approval
+		WHERE
+		member_id =#{memberId,jdbcType=BIGINT} AND type =#{type,jdbcType=TINYINT}
+		ORDER BY insert_time DESC LIMIT 1
+	</select>
+</mapper>
